@@ -1,0 +1,13 @@
+{
+  "id": "sa.urtv.screensaver",
+  "version": "1.1.4",
+  "vendor": "UrTV-webOS",
+  "type": "web",
+  "main": "index.html",
+  "title": "شاشة صلاح",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "disableBackHistoryAPI": true,
+  "requiredPermissions": ["internet"],
+  "requiredACG": []
+}
