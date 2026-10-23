@@ -3,13 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="dns-prefetch" href="https://api.aladhan.com">
+<link rel="dns-prefetch" href="https://api.open-meteo.com">
+<link rel="dns-prefetch" href="https://www.thesportsdb.com">
+<link rel="dns-prefetch" href="https://www.skynewsarabia.com">
+<!-- __FONT_PRELOAD__ -->
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("__F_LIGHT__") format("woff2")}
   @font-face{font-family:'Thmanyah';font-weight:400;font-style:normal;font-display:block;src:url("__F_REGULAR__") format("woff2")}
   @font-face{font-family:'Thmanyah';font-weight:500;font-style:normal;font-display:block;src:url("__F_MEDIUM__") format("woff2")}
-  /* ﷺ and ﴿﴾ only (2 KB subset of Noto Naskh Arabic, OFL): Thmanyah has no glyph for them */
-  @font-face{font-family:'NotoMarks';font-style:normal;font-weight:400;src:url("__F_MARKS__") format("woff2")}
   @font-face{font-family:'ThmanyahDisplay';font-weight:700;font-style:normal;font-display:block;src:url("__F_DISPLAY__") format("woff2")}
 
   :root{
@@ -18,8 +21,14 @@
     --gold:#DCB86F;
     --green-lt:#57D294;
     --red:#EE6A50;
+    --ar-small-lh:1.48;
   }
   *{margin:0;padding:0;box-sizing:border-box}
+  /* letter-spacing يقطّع العربية؛ والهامش السالب كان يقصّ النقاط تحت الياء والجيم */
+  .week .hd,.panel .label,.sys-title,.subline,.dev-credit,.week li.src,.panel .sub,
+  .dock-btn .dock-icon--fallback,.week li.quote,.p-match .sub,.wxsub,.mblock .sub{
+    letter-spacing:0;
+  }
   /* Hidden until the clock, the saved panels and the photo are in place, then one fade in: no half-built
      frames. The delayed animation shows it anyway if the script ever fails. */
   body{opacity:0;animation:reveal .3s 2.5s forwards}
@@ -77,7 +86,7 @@
   .stage{
     position:relative;z-index:5;height:100vh;
     padding:3.1vh 3.6vw 5.4vh;
-    display:grid;grid-template-rows:auto 1fr auto auto;gap:1.5vh;
+    display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:1.5vh;
   }
 
   .top{display:flex;justify-content:space-between;align-items:flex-start;gap:2.5vw}
@@ -93,7 +102,7 @@
   }
   .week .hd{
     display:flex;align-items:center;gap:.7em;margin-bottom:1vh;
-    font-size:clamp(12px,1vw,18px);font-weight:500;letter-spacing:.18em;color:#D6AF6B;
+    font-size:clamp(12px,1vw,18px);font-weight:500;color:#D6AF6B;
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(220,184,111,.5),transparent)}
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
@@ -104,7 +113,7 @@
     padding:.8vh 0;border-bottom:1px solid rgba(220,184,111,.13);
   }
   .week li:last-child{border-bottom:none}
-  .week li span:first-child{flex:0 1 auto;max-width:68%;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em}
+  .week li span:first-child{flex:0 1 auto;max-width:68%;overflow:hidden;text-overflow:ellipsis;line-height:var(--ar-small-lh);padding-block:.1em}
   .week li .ep{flex:0 0 auto;color:#9FB8A8;font-size:.74em;font-variant-numeric:tabular-nums}
   .week li .rt{flex:0 0 auto;color:#E0BA74;font-size:.74em;font-variant-numeric:tabular-nums}
   .week li .dt{flex:1 1 auto;color:#9C9279;font-size:.72em;min-width:3.2em;text-align:left}
@@ -119,28 +128,41 @@
   .week li.next .dt{color:#E0BA74}
   .week li.quote{white-space:normal;display:block;font-size:clamp(17px,1.5vw,29px);line-height:1.75;
     border-bottom:none;padding:.4vh 0 0;color:#FFF7E6}
-  /* Thmanyah draws ﴿﴾ as small angle marks: they come from the NotoMarks subset */
-  .week li.quote .orn{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:#D6AF6B;
-    font-size:1.05em;padding:0 .15em}
-  /* ﷺ is not in Thmanyah either: NotoMarks, in gold like the verse brackets so it reads as ornament */
-  .week li.quote .saw{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:#D6AF6B;font-size:1.6em;line-height:1;vertical-align:-.1em}
-  /* a full hadith: the isnad and the narration small and muted, the Prophet's words ﷺ at full size */
-  .week li.quote.hadith{font-size:clamp(15px,1.3vw,25px);line-height:1.7}
-  .week li.quote .nar{font-size:.66em;color:#B9AE96}
-  .week li.quote .nar .saw{font-size:1.45em}
-  .week li.src{border-bottom:none;padding:.6vh 0 0;font-size:clamp(12px,.95vw,18px);color:#D6AF6B}
+  .week li.src{border-bottom:none;padding:.6vh 0 0;font-size:clamp(13px,1vw,19px);line-height:var(--ar-small-lh);color:#D6AF6B}
   .week .empty{color:#9A9078;font-size:clamp(14px,1.1vw,21px);font-weight:300;margin-top:1vh}
 
   .dates{text-align:right;flex-shrink:0}
   .hijri{font-size:clamp(19px,1.86vw,37px);font-weight:500;color:var(--sand);line-height:1.3}
   .greg{margin-top:.55vh;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim)}
-  .dev-credit{margin-top:.9vh;font-size:clamp(10px,.82vw,15px);font-weight:300;color:var(--dim);opacity:.88;line-height:1.35;text-align:right}
+  .dev-credit{margin-top:.9vh;font-size:clamp(11px,.88vw,16px);font-weight:300;color:var(--dim);opacity:.88;line-height:var(--ar-small-lh);text-align:right}
   /* starts at the screen edge, under the first letters, and fades toward the middle */
   .rule{margin-top:1.2vh;width:clamp(100px,9vw,190px);height:1px;margin-left:auto;margin-right:0;
     background:linear-gradient(270deg,var(--gold),rgba(220,184,111,0))}
 
   /* the card keeps its width on the left; the clock is centred in the space between it and the right edge */
-  .mid{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4.5vw}
+  .mid{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4.5vw;min-height:0;overflow:hidden}
+  .week-col{justify-self:end;display:flex;flex-direction:column;gap:1.2vh;width:min(760px,48vw);min-height:0;max-height:100%;overflow:hidden}
+  .week-col > .week{width:100%;min-height:0}
+  .week.aj-breaking{flex-shrink:1}
+  html.widget .week-col{width:100%}
+  html.widget .aj-breaking{display:none}
+  html.widget .aj-cam{display:none}
+  /* TRIAL: معاينة الخلفية فقط — أزل class أو عطّل previewBgLayout في CONFIG */
+  html.preview-bg-layout .clockwrap,
+  html.preview-bg-layout .week-col{display:none!important}
+  html.preview-bg-layout .mid{grid-template-columns:1fr}
+  .week.aj-cam{flex-shrink:1;min-height:0}
+  .cam-view{
+    position:relative;width:100%;aspect-ratio:16/9;max-height:min(20vh,180px);
+    background:#050805;border-radius:10px;overflow:hidden;
+    border:1px solid rgba(220,184,111,.22);cursor:pointer;
+  }
+  .cam-view .hdmi-preview{width:100%;height:100%;object-fit:cover;display:block;background:#0a120c}
+  .cam-view.cam-off .hdmi-preview{opacity:.15}
+  .cam-view.cam-off::after{
+    content:'لا إشارة HDMI';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:clamp(12px,1vw,17px);color:#9A9078;font-weight:400;
+  }
   .clockwrap{display:flex;flex-direction:column;align-items:center;justify-self:center}
   .clock{
     display:flex;align-items:baseline;justify-content:center;direction:ltr;
@@ -162,7 +184,7 @@
   }
   .subline{
     margin-top:1.4vh;display:flex;align-items:center;gap:.7em;
-    font-size:clamp(12px,1.02vw,20px);font-weight:300;letter-spacing:.3em;color:#D8CDB6;
+    font-size:clamp(12px,1.02vw,20px);font-weight:300;line-height:var(--ar-small-lh);color:#D8CDB6;
   }
   .subline .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.9}
 
@@ -170,38 +192,37 @@
   .appdock{
     display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;align-items:flex-end;
     gap:clamp(14px,1.35vw,24px);direction:rtl;max-width:100%;
+    position:relative;contain:layout style;transform:translateZ(0);isolation:isolate;
   }
+  .dock-focus-ring{
+    position:absolute;left:0;top:0;pointer-events:none;z-index:3;
+    border:3px solid var(--gold);border-radius:22%;box-sizing:border-box;
+    transition:none!important;will-change:transform;width:0;height:0;opacity:0;
+  }
+  .appdock.dock-ready .dock-focus-ring{opacity:1}
   .dock-btn{
     appearance:none;border:0;background:transparent;padding:0;cursor:pointer;color:inherit;
-    display:flex;flex-direction:column;align-items:center;min-width:clamp(58px,5.6vw,94px);
-    font-family:inherit;outline:none;
+    display:flex;flex-direction:column;align-items:center;min-width:clamp(72px,7vw,112px);
+    font-family:inherit;outline:none;contain:layout style;
   }
   .dock-btn .dock-icon{
-    width:clamp(62px,5.8vw,94px);height:clamp(62px,5.8vw,94px);border-radius:22%;
+    width:clamp(72px,7vw,112px);height:clamp(72px,7vw,112px);border-radius:22%;
     overflow:hidden;display:flex;align-items:center;justify-content:center;
-    background:rgba(12,10,8,.5);border:1px solid rgba(220,184,111,.32);
-    box-shadow:0 10px 32px rgba(0,0,0,.38);
-    transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+    background:rgba(12,10,8,.5);border:2px solid rgba(220,184,111,.32);
+    transform:translateZ(0);transition:none!important;box-shadow:none!important;
+    contain:layout style;padding:.2em;box-sizing:border-box;
   }
   .dock-btn .dock-icon--fallback{
-    font-size:clamp(8px,.78vw,13px);font-weight:500;color:#E8E4DC;line-height:1.2;
-    padding:.2em .35em;text-align:center;direction:rtl;
+    font-size:clamp(14px,1.35vw,24px);font-weight:600;color:#F2EDE4;line-height:1.38;
+    padding:.1em .2em;text-align:center;direction:rtl;word-break:normal;overflow-wrap:anywhere;
     background:linear-gradient(145deg,#3d3d3d,#1a1a1a);
   }
-  .dock-btn:focus .dock-icon,.dock-btn.focused .dock-icon{
-    transform:scale(1.07);
-    border-color:var(--gold);
-    box-shadow:0 0 0 2px rgba(220,184,111,.55),0 12px 36px rgba(0,0,0,.45);
+  .dock-icon--glyph{
+    background:linear-gradient(145deg,#3d3d3d,#1a1a1a);
   }
-  .dock-btn--gear{min-width:auto;margin-inline-start:clamp(4px,.5vw,10px)}
-  .dock-btn--gear .dock-gear{
-    display:block;width:clamp(38px,3.4vw,54px);height:clamp(38px,3.4vw,54px);
-    stroke:#D6AF6B;fill:none;stroke-width:1.65;
-    filter:drop-shadow(0 2px 10px rgba(0,0,0,.5));
-    transition:transform .15s ease,stroke .15s ease;
-  }
-  .dock-btn--gear:focus .dock-gear,.dock-btn--gear.focused .dock-gear{
-    stroke:#FFE9B8;transform:scale(1.1);
+  .dock-icon--glyph svg{
+    display:block;width:62%;height:62%;color:#D6AF6B;
+    stroke:currentColor;fill:none;stroke-width:1.75;transition:none!important;
   }
 
   .sys-panel{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 clamp(2vw,3.6vw,4vw) 20vh 1rem}
@@ -212,25 +233,26 @@
     background:rgba(10,16,12,.94);border:1px solid rgba(220,184,111,.34);
     box-shadow:0 24px 64px rgba(0,0,0,.55);direction:rtl;
   }
-  .sys-title{margin:0 0 16px;font-size:clamp(15px,1.35vw,24px);font-weight:500;letter-spacing:.12em;color:var(--gold);text-align:right}
+  .sys-title{margin:0 0 16px;font-size:clamp(15px,1.35vw,24px);font-weight:500;color:var(--gold);text-align:right}
   .sys-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .sys-tile{
-    appearance:none;border:1px solid rgba(220,184,111,.28);background:rgba(255,255,255,.07);
+    appearance:none;border:2px solid rgba(220,184,111,.28);background:rgba(255,255,255,.07);
     border-radius:18px;padding:16px 10px 14px;font-family:inherit;font-size:clamp(11px,.92vw,17px);
     font-weight:500;color:var(--sand);cursor:pointer;line-height:1.25;text-align:center;
+    transform:translateZ(0);contain:layout style paint;
   }
-  .sys-tile.focused,.sys-tile:focus{border-color:var(--gold);background:rgba(220,184,111,.2);outline:none;transform:scale(1.03)}
+  .sys-tile.focused{border-color:var(--gold);background:rgba(220,184,111,.2);outline:none;transition:none!important}
 
   .bottom{
-    display:grid;grid-template-columns:1fr .9fr 1.3fr;
+    display:grid;grid-template-columns:1fr 1.35fr;
     gap:2.4vw;align-items:start;
     border-top:1px solid rgba(220,184,111,.30);
     padding-top:2.1vh;
   }
   .panel{min-width:0}
   .panel .label{
-    font-size:clamp(12px,.98vw,18px);font-weight:500;letter-spacing:.2em;
-    color:#D6AF6B;margin-bottom:.8vh;white-space:nowrap;
+    font-size:clamp(12px,.98vw,18px);font-weight:500;
+    color:#D6AF6B;margin-bottom:.8vh;white-space:nowrap;line-height:var(--ar-small-lh);
   }
   .panel .big{
     display:flex;align-items:baseline;gap:.4em;flex-wrap:nowrap;white-space:nowrap;min-width:0;line-height:1.1;
@@ -240,19 +262,15 @@
   .panel .unit{font-size:.56em;font-weight:500;color:var(--gold)}
   .panel .sub{
     margin-top:.85vh;font-size:clamp(12px,1vw,19px);font-weight:300;color:#C6BBA4;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:var(--ar-small-lh);padding-block:.08em;
   }
   .panel .sub b{color:#F0E6D0;font-weight:500}
 
   .p-prayer{text-align:right}
   .p-prayer .big{justify-content:flex-start}
-  .p-mid{text-align:center}
-  .p-mid .big{display:block;text-align:center;line-height:1.06}
-  .p-mid .num{font-size:1.3em;line-height:1}
-  .p-mid .unit{font-size:.46em;font-weight:500;color:#D6AF6B;letter-spacing:.02em;display:inline;vertical-align:.5em}
   .p-match{text-align:left}
   .p-match .big{justify-content:flex-end}
-  .p-match .sub{white-space:normal;line-height:1.4;max-width:100%;font-size:clamp(11px,.88vw,17px)}
+  .p-match .sub{white-space:normal;line-height:var(--ar-small-lh);max-width:100%;font-size:clamp(12px,.92vw,18px)}
 
   .mrow{display:flex;flex-direction:row;gap:1.6vw;align-items:flex-end;justify-content:flex-end;min-width:0}
   .mblock{text-align:left;flex:0 1 auto;min-width:0;max-width:100%}
@@ -262,7 +280,7 @@
   .mrow.flip .mblock{animation:weekIn .5s ease both}
   .mrow.flip .mblock + .mblock{animation-delay:.08s}
   .mblock .big > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
-    padding-bottom:.3em;margin-bottom:-.3em}  /* room for the dots under ي, ج… */
+    line-height:var(--ar-small-lh);padding-block:.08em}
   .none-week{font-size:clamp(26px,2.5vw,54px);font-weight:700;font-family:'ThmanyahDisplay','Thmanyah',serif;color:#A79C85}
 
   /* A new photo settles in over a minute, then holds still: an endless drift kept the TV redrawing
@@ -280,16 +298,9 @@
   .wxt{font-family:'ThmanyahDisplay','Thmanyah',serif;font-weight:700;color:#FFFCF2;direction:ltr;
     font-variant-numeric:tabular-nums}
   .wxd.dust{color:#E8B86A}
-  .wxsub{margin-top:.55vh;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
+  .wxsub{margin-top:.55vh;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap;line-height:var(--ar-small-lh)}
   .wxr:not(:empty)::before{content:'  ·  ';white-space:pre;color:rgba(214,175,107,.7)}
   .wxt:empty,.wxd:empty,.wxr:empty{display:none}
-  .rule.l{margin-left:0;margin-right:auto;background:linear-gradient(90deg,var(--gold),rgba(220,184,111,0))}
-  .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
-    font-size:clamp(12px,1.06vw,21px);font-weight:400;color:#D8CDB6}
-  .mk .m{display:inline-flex;align-items:baseline;gap:.45em}
-  .mk .delta{font-size:.72em}
-  .mk .delta.up{color:#79D6A0}
-  .mk .delta.down{color:#EE8B70}
   .p-prayer.now .big{color:#FFE9B8;text-shadow:0 0 40px rgba(220,184,111,.45)}
   .p-prayer.now .label{color:#F1CF8A}
   .live{color:#EE8B70;font-weight:500}
@@ -321,18 +332,12 @@
       <div class="hijri" id="hijri">—</div>
       <div class="greg" id="greg">—</div>
       <div class="rule"></div>
-      <div class="dev-credit">برمجة : عبقر صلاح</div>
+      <div class="dev-credit">برمجة : صلاح عبقر</div>
     </div>
 
     <div class="markets">
       <div class="wxline"><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span></div>
       <div class="wxsub"><span id="wx-city">الرياض</span><span class="wxr" id="wx-range"></span></div>
-      <div class="rule l"></div>
-      <div class="mk">
-        <span class="m"><span>تاسي</span><span id="tasi-chg" class="delta" hidden></span></span>
-        <span class="m"><span>S&amp;P 500</span><span id="spx-chg" class="delta" hidden></span></span>
-        <span class="m"><span>بيتكوين</span><span id="btc-chg" class="delta" hidden></span></span>
-      </div>
     </div>
   </header>
 
@@ -341,12 +346,23 @@
       <div class="clock">
         <span class="ampm" id="ck-ap">—</span><span class="d" id="ck-h">--</span><span class="sep">:</span><span class="d" id="ck-m">--</span>
       </div>
-      <div class="subline"><span class="dot"></span><span id="clock-sub">بتوقيت الرياض</span></div>
     </div>
 
-    <div class="week">
-      <div class="hd" id="week-hd">هذا الأسبوع</div>
-      <ul id="week-list"><li class="empty">جارٍ التحميل…</li></ul>
+    <div class="week-col">
+      <div class="week">
+        <div class="hd" id="week-hd">هذا الأسبوع</div>
+        <ul id="week-list"><li class="empty">جارٍ التحميل…</li></ul>
+      </div>
+      <div class="week aj-breaking">
+        <div class="hd">عاجل</div>
+        <ul id="aj-list"><li class="empty">جارٍ التحميل…</li></ul>
+      </div>
+      <div class="week aj-cam" id="hdmi-cam-panel" hidden>
+        <div class="hd">كاميرا البيت</div>
+        <div class="cam-view" id="hdmi-cam-view" role="button" tabindex="0" aria-label="كاميرا البيت">
+          <video id="hdmi-cam-video" class="hdmi-preview" autoplay muted playsinline></video>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -367,12 +383,6 @@
       <div class="label" id="prayer-label">الصلاة القادمة</div>
       <div class="big"><span id="prayer-name">—</span><span class="num" id="prayer-time"></span></div>
       <div class="sub" id="prayer-count">—</div>
-    </div>
-
-    <div class="panel p-mid">
-      <div class="label" id="ramadan-label">رمضان ١٤٤٨</div>
-      <div class="big"><span class="num" id="ramadan-days">—</span></div>
-      <div class="sub" id="ramadan-sub">—</div>
     </div>
 
     <div class="panel p-match">
@@ -402,12 +412,15 @@ const CONFIG = {
   prayerMethod: 4,
   // followed teams in priority order: #teams=id,id,... (up to 10); older builds send team1/team2
   teamIds: (_Q.has('teams') ? _Q.get('teams').split(',')
-            : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136137'])
+            : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136022'])
     .map(x=>(x||'').trim()).filter(x=>/^\d+$/.test(x)).slice(0, 10),
   sportsKey: '123',
-  // the card beside the clock: shows | prayers | forecast | matches | verse | none (#week=0 from older builds = none)
-  panel: (p => ['shows','prayers','forecast','matches','verse','none'].includes(p) ? p : 'verse')
-         (_Q.get('panel') || (_Q.get('week') === '0' ? 'none' : 'verse')),
+  // the card beside the clock: shows | prayers | forecast | matches | none (#week=0 = none; #panel=verse legacy → none)
+  panel: (p => {
+    const raw = _Q.get('panel') || (_Q.get('week') === '0' ? 'none' : 'none');
+    if(raw === 'verse') return 'none';
+    return ['shows','prayers','forecast','matches','none'].includes(raw) ? raw : 'none';
+  })(),
   matchesPerPage: 2,
   matchPageMs: 15000,
   // minutes from adhan to iqama (Ministry of Islamic Affairs defaults); Friday Dhuhr has none
@@ -422,9 +435,28 @@ const CONFIG = {
   },
   weekWindowDays: 7,
   // minutes between background photos: #photos=5|10|15|30|60 (anything else = 30)
-  photoMinutes: (m => [5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
+  photoMinutes: (m => [3,5,10,15,30,60].includes(m) ? m : 3)(_num('photos', 3)),
   // #widget=1: only the card, on a transparent page (the launcher's home screen shows it)
   widget: _Q.get('widget') === '1',
+  // embedded HDMI preview (1–4); #hdmiCam=0 disables · default 2 = كاميرا البيت
+  hdmiCam: (() => {
+    const v = parseInt(_Q.get('hdmiCam') || _Q.get('camHdmi') || '2', 10);
+    if(v === 0) return 0;
+    return v >= 1 && v <= 4 ? v : 2;
+  })(),
+  // fixed wallpaper: #fixedBg=off restores rotation · TRIAL default below — set to '' to revert permanently
+  fixedBg: (() => {
+    const q = _Q.get('fixedBg');
+    if(q === '0' || q === 'off' || q === 'false') return '';
+    if(q) return q;
+    return 'assets/backgrounds/salah-fixed-trial.jpg';
+  })(),
+  // #previewBg=1 يخفي الساعة + عاجل + كاميرا لمعاينة الخلفية فقط
+  previewBgLayout: (() => {
+    const q = _Q.get('previewBg');
+    if(q === '1' || q === 'on' || q === 'true') return true;
+    return false;
+  })(),
 };
 
 const GREG = 'ar-SA-u-ca-gregory-nu-arab';
@@ -539,7 +571,6 @@ async function loadPrayers(){
     try{ buildPrayers(computePrayers()); }catch(_){}
   }
   tickPrayer();
-  tickRamadan();   // Ramadan mode needs the prayer times
   if(CONFIG.panel === 'prayers') renderPanel(false);
 }
 
@@ -610,72 +641,11 @@ function tickPrayer(){
   elC.innerHTML = 'بعد <b>' + humanRemaining(Math.max(0, Math.round(leftM*60))) + '</b>';
 }
 
-let RAM_CACHE = {day:'', val:null};
-function ramadanStart(){
-  const dayKey = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
-  if(RAM_CACHE.day === dayKey) return RAM_CACHE.val;
-  const fmt = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{timeZone:CONFIG.timezone,month:'numeric'});
-  let found = null;
-  for(let i=0;i<400;i++){
-    const d = new Date(Date.now()+i*86400000);
-    if(fmt.format(d) === '9'){
-      const p = riyadhParts(d);
-      const hy = +new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{timeZone:CONFIG.timezone,year:'numeric'})
-        .format(d).replace(/[^0-9]/g,'');
-      found = {y:p.y, mo:p.mo, d:p.d, hy};
-      break;
-    }
-  }
-  RAM_CACHE = {day: dayKey, val: found};
-  return found;
-}
-function hijriYearNow(){
-  try{
-    return +new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{timeZone:CONFIG.timezone,year:'numeric'})
-      .format(new Date()).replace(/[^0-9]/g,'');
-  }catch(e){ return 1448; }
-}
 function hijriMonthNow(){
   try{
     return +new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{timeZone:CONFIG.timezone,month:'numeric'})
       .format(new Date()).replace(/[^0-9]/g,'');
   }catch(e){ return 0; }
-}
-function tickRamadan(){
-  const elL=document.getElementById('ramadan-label'),
-        elD=document.getElementById('ramadan-days'),
-        elS=document.getElementById('ramadan-sub');
-
-  // ---- Ramadan mode: iftar / suhoor instead of the countdown ----
-  if(hijriMonthNow() === 9 && PRAYERS.length){
-    const rp = riyadhParts();
-    const mins = rp.h*60 + rp.mi + rp.s/60;
-    const fajr = PRAYERS.find(p=>p.key==='Fajr');
-    const maghrib = PRAYERS.find(p=>p.key==='Maghrib');
-    const fajrM = fajr.h*60 + fajr.mi, maghribM = maghrib.h*60 + maghrib.mi;
-    let label, targetM;
-    if(mins < fajrM){ label = 'الإمساك'; targetM = fajrM; }
-    else if(mins < maghribM){ label = 'الإفطار'; targetM = maghribM; }
-    else { label = 'الإمساك'; targetM = fajrM + 1440; }
-    const th = Math.floor((targetM % 1440) / 60), tm = targetM % 60;
-    elL.textContent = label;
-    elD.innerHTML = ar(th%12===0?12:th%12) + ':' + ar(String(tm).padStart(2,'0'))
-                  + ' <span class="unit">' + (th < 12 ? 'ص' : 'م') + '</span>';
-    elS.innerHTML = 'بعد <b>' + humanRemaining(Math.max(0, Math.round((targetM - mins)*60))) + '</b>';
-    return;
-  }
-
-  // ---- countdown mode ----
-  const st = ramadanStart();
-  elL.textContent = 'رمضان ' + ar(st ? st.hy : hijriYearNow());
-  if(!st){ elD.textContent='—'; elS.textContent=''; return; }
-  const rp2 = riyadhParts();
-  const days = Math.max(0, Math.round(
-    (Date.UTC(st.y, st.mo-1, st.d) - Date.UTC(rp2.y, rp2.mo-1, rp2.d)) / 86400000));
-  elD.innerHTML = ar(days) + ' <span class="unit">يوم</span>';
-  elS.textContent = days === 0 ? 'رمضان مبارك'
-    : 'يبدأ ' + new Intl.DateTimeFormat(GREG,{timeZone:CONFIG.timezone,weekday:'long',day:'numeric',month:'long'})
-        .format(new Date(Date.UTC(st.y, st.mo-1, st.d, 12)));
 }
 
 const TEAM_AR = __TEAMS_AR__;   // assets/shared/teams-ar.json
@@ -773,7 +743,7 @@ function arName(en, kind, id){
 const teamAr = (s, id) => arName(s, 'team', id);
 
 async function fetchNext(id){
-  const r = await fetch(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventsnext.php?id=${id}`,{cache:'no-store'});
+  const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventsnext.php?id=${id}`, 12000);
   if(!r.ok) throw 0;
   const j = await r.json();
   if(j?.events) NEXT_LIST[id] = j.events;
@@ -875,7 +845,7 @@ function renderMatches(turn){
 }
 
 async function fetchLast(id){
-  const r = await fetch(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventslast.php?id=${id}`,{cache:'no-store'});
+  const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventslast.php?id=${id}`, 12000);
   if(!r.ok) throw 0;
   const j = await r.json();
   return j.results || [];
@@ -896,65 +866,10 @@ async function loadMatches(){
   if(CONFIG.panel === 'matches') renderPanel(false);
 }
 
-const TICKERS = [
-  {sym:'^TASI.SR', chg:'tasi-chg'},
-  {sym:'^GSPC',    chg:'spx-chg'},
-  {cg:'bitcoin',   chg:'btc-chg'},
-];
-
-// never invent a direction: unknown hides the marker
-function paintDir(t, up){
-  const chEl = document.getElementById(t.chg);
-  if(up === null || up === undefined){ chEl.style.display='none'; chEl.hidden = true; chEl.textContent=''; return; }
-  chEl.hidden = false; chEl.style.display='';
-  chEl.textContent = up ? '▲' : '▼';
-  chEl.className = 'delta ' + (up ? 'up' : 'down');
-}
-
 async function fetchT(url, ms){
   const c = new AbortController(); const id = setTimeout(()=>c.abort(), ms||12000);
   try{ return await fetch(url,{cache:'no-store', signal:c.signal}); }
   finally{ clearTimeout(id); }
-}
-
-// Yahoo has no CORS headers: try it directly (works inside the app), then through public CORS gateways
-async function yahooChart(sym){
-  const direct = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`;
-  const routes = [
-    [direct, 7000, j => j],
-    ['https://api.allorigins.win/get?url=' + encodeURIComponent(direct), 15000, w => JSON.parse(w.contents)],
-    ['https://corsproxy.io/?url=' + encodeURIComponent(direct), 12000, j => j],
-  ];
-  for(const [url, ms, unwrap] of routes){
-    try{
-      const r = await fetchT(url, ms);
-      if(!r.ok) continue;
-      const j = unwrap(await r.json());
-      if(j && j.chart && j.chart.result) return j;
-    }catch(e){}
-  }
-  throw 0;
-}
-
-async function loadTicker(t){
-  try{
-    if(t.cg){                                  // crypto: CoinGecko, CORS friendly
-      const r = await fetchT(`https://api.coingecko.com/api/v3/simple/price?ids=${t.cg}&vs_currencies=usd&include_24hr_change=true`, 10000);
-      if(!r.ok) throw 0;
-      const j = await r.json();
-      const c = j && j[t.cg] ? j[t.cg] : null;
-      const d = c ? (c.usd_24h_change ?? c.usd_24hr_change ?? null) : null;
-      paintDir(t, typeof d === 'number' ? d >= 0 : null);
-      return;
-    }
-    const j = await yahooChart(t.sym);
-    const res = j.chart.result[0];
-    const price = res.meta.regularMarketPrice;
-    const closes = (res.indicators.quote[0].close || []).filter(x=>x != null);
-    const prev = closes.length >= 2 ? closes[closes.length-2]
-               : (res.meta.chartPreviousClose || res.meta.previousClose || null);
-    paintDir(t, prev == null ? null : price >= prev);
-  }catch(e){ if(!document.getElementById(t.chg).textContent) paintDir(t, null); }   // offline: keep the arrow on screen
 }
 
 const SKIP_TYPES = ['News','Talk Show','Sports','Game Show'];
@@ -1057,7 +972,6 @@ function renderPanel(animate){
   if(P === 'prayers') rows = prayerRows();
   else if(P === 'forecast') rows = forecastRows();
   else if(P === 'matches') rows = matchRows();
-  else if(P === 'verse'){ const q = quoteOfDay(); hd.textContent = q.title; rows = q.rows; }
   if(PANEL_TITLE[P]) hd.textContent = PANEL_TITLE[P];
   if(!rows.length){
     ul.classList.remove('flip');
@@ -1124,17 +1038,79 @@ function matchRows(){
     });
 }
 
-// آية يوماً وبيت شعر يوماً (بدون أحاديث). الآيات من assets/shared/verses.json؛ الشعر من poetry.json
-const VERSES = __VERSES__;
-const POETRY = __POETRY__;
-function quoteOfDay(){
-  const n = riyadhDayNumber(), half = Math.floor(n / 2);
-  if(VERSES.length && n % 2 === 0){
-    const v = VERSES[half % VERSES.length];
-    return {title:'آية اليوم', rows:[`<li class="quote"><span class="orn">﴿</span>${esc(v.text)}<span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]};
+const SKY_BREAK_RSS = [
+  'https://www.skynewsarabia.com/rss/breaking-news.xml',
+];
+const SKY_BREAK_SRC = 'سكاي نيوز عربية';
+const SKY_BREAK_CACHE_KEY = 'skyBreak1';
+const SKY_BREAK_POLL_MS = 30 * 1000;
+let SKY_BREAK_POOL = [];
+let SKY_BREAK_PAGE = 0;
+let SKY_BREAK_LOADED = false;
+try{ SKY_BREAK_POOL = JSON.parse(localStorage.getItem(SKY_BREAK_CACHE_KEY) || '[]') || []; }catch(e){ SKY_BREAK_POOL = []; }
+
+function decodeXml(s){
+  return String(s || '')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'");
+}
+function cleanBreakingText(s){
+  return decodeXml(s).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    .replace(/^عاجل\s*[|:·\-]\s*/u, '').trim();
+}
+function parseSkyBreakingRss(xml){
+  const out = [], seen = new Set();
+  const re = /<item>([\s\S]*?)<\/item>/gi;
+  let m;
+  while((m = re.exec(xml))){
+    const block = m[1];
+    const raw = (block.match(/<title>([\s\S]*?)<\/title>/i) || [])[1];
+    const title = cleanBreakingText(raw);
+    const guid = cleanBreakingText((block.match(/<guid[^>]*>([\s\S]*?)<\/guid>/i) || [])[1] || '');
+    const key = guid || title;
+    if(!title || seen.has(key)) continue;
+    seen.add(key);
+    out.push({text: title, t: Date.parse((block.match(/<pubDate>([\s\S]*?)<\/pubDate>/i) || [])[1]) || 0});
   }
-  const p = POETRY[half % POETRY.length];
-  return {title:'بيت شعر اليوم', rows:[`<li class="quote">${esc(p.text)}</li>`, `<li class="src">${esc(p.poet)}</li>`]};
+  return out.sort((a, b) => b.t - a.t).slice(0, 15);
+}
+async function fetchSkyBreakingXml(url){
+  const r = await fetchT(url, 14000);
+  if(!r.ok) throw 0;
+  return await r.text();
+}
+async function loadSkyBreaking(){
+  let fresh = [];
+  for(const url of SKY_BREAK_RSS){
+    if(fresh.length) break;
+    try{ fresh = parseSkyBreakingRss(await fetchSkyBreakingXml(url)); }catch(e){}
+  }
+  if(fresh.length){
+    const prevHead = SKY_BREAK_POOL[0]?.text;
+    const prevTop = SKY_BREAK_POOL[0]?.t || 0;
+    SKY_BREAK_POOL = fresh;
+    if(fresh[0].text !== prevHead || (fresh[0].t || 0) > prevTop) SKY_BREAK_PAGE = 0;
+    try{ localStorage.setItem(SKY_BREAK_CACHE_KEY, JSON.stringify(SKY_BREAK_POOL)); }catch(e){}
+    renderSkyBreaking(fresh[0].text !== prevHead);
+  } else if(SKY_BREAK_POOL.length){
+    const newest = Math.max(0, ...SKY_BREAK_POOL.map((x) => x.t || 0));
+    if(newest && Date.now() - newest > 6 * 3600 * 1000) SKY_BREAK_POOL = [];
+  }
+  SKY_BREAK_LOADED = true;
+  renderSkyBreaking(false);
+}
+function renderSkyBreaking(animate){
+  const ul = document.getElementById('aj-list');
+  if(!ul) return;
+  if(!SKY_BREAK_POOL.length){
+    if(SKY_BREAK_LOADED) ul.innerHTML = '<li class="empty">لا عاجل الآن</li>';
+    return;
+  }
+  const item = SKY_BREAK_POOL[SKY_BREAK_PAGE % SKY_BREAK_POOL.length];
+  ul.innerHTML = `<li class="quote">${esc(item.text)}</li><li class="src">${esc(SKY_BREAK_SRC)}</li>`;
+  ul.classList.remove('flip');
+  if(animate){ void ul.offsetWidth; ul.classList.add('flip'); }
 }
 
 const WX_CODES = {
@@ -1223,7 +1199,6 @@ let REVEALED = false;
 function reveal(){
   if(REVEALED) return;
   REVEALED = true;
-  // fonts may still be arriving (tv.html loads them as files): wait for them, briefly
   const fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
   Promise.race([fonts, new Promise(r => setTimeout(r, 800))])
     .then(() => document.documentElement.classList.add('ready'));
@@ -1243,7 +1218,7 @@ function showBackground(url, b){
 }
 
 // Every 4 days a new random set of 5 hosted photos (same draw as the launcher: Park-Miller generator seeded
-// by the 4-day period), rotating every CONFIG.photoMinutes (30 unless the owner changed it). Only the photo on screen is downloaded.
+// by the 4-day period), rotating every CONFIG.photoMinutes (3 min default). Only the photo on screen is downloaded.
 const PHOTO_SET = 5, PHOTO_PERIOD_DAYS = 4;
 function riyadhDayNumber(){
   const p = riyadhParts();
@@ -1262,6 +1237,10 @@ function photoSet(n){
 }
 let BG_SLOT = -1, PREFETCHED = false;
 function applyBackground(force){
+  if(CONFIG.fixedBg){
+    showBackground(CONFIG.fixedBg, {d: 0.38});
+    return;
+  }
   try {
     const p = riyadhParts();
     const slotMin = CONFIG.photoMinutes;   // divides 1440, so slots count on across midnight
@@ -1272,8 +1251,6 @@ function applyBackground(force){
     const local = BGS[slot % BGS.length];
     if(!set.length){ showBackground(local.u, local); return; }
     const b = set[slot % set.length], url = PHOTO_BASE + b.f;
-    // First photo: wait briefly for the hosted one (the app serves it from disk at once) so the screen
-    // doesn't flash a bundled photo first; slow network → bundled one, swapped when the hosted one arrives.
     let done = false;
     const fallback = () => { if(!done && !document.querySelector('.photo').style.backgroundImage) showBackground(local.u, local); };
     const t = setTimeout(fallback, 1200);
@@ -1287,8 +1264,8 @@ function applyBackground(force){
 }
 
 // Last painted panels, shown at once on the next start while fresh data loads.
-const SNAP_KEY = 'snap3:' + location.hash;   // bump when the panels' markup changes
-const SNAP_SEL = ['.markets', '#week-list', '#match-row'];
+const SNAP_KEY = 'snap5:' + location.hash;   // bump when the panels' markup changes
+const SNAP_SEL = ['#week-list', '#match-row'];   // not .markets — old snaps re-injected تاسي/أسهم
 function saveSnap(){
   try{ localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP_SEL.map(q => (document.querySelector(q)||{}).innerHTML || ''))); }catch(e){}
 }
@@ -1298,55 +1275,87 @@ function restoreSnap(){
     if(v) SNAP_SEL.forEach((q, i) => { const el = document.querySelector(q); if(el && v[i]) el.innerHTML = v[i]; });
   }catch(e){}
 }
+function purgeLegacyMarketTickers(){
+  document.querySelectorAll('.markets .mk, .mk').forEach((el) => el.remove());
+  try{
+    for(let i = localStorage.length - 1; i >= 0; i--){
+      const k = localStorage.key(i);
+      if(k && (k.indexOf('snap3:') === 0 || k.indexOf('snap2:') === 0 || k === 'ajPool' || k === 'ajPool5' || k === 'ajPool6')) localStorage.removeItem(k);
+    }
+  }catch(e){}
+}
+
+function bootMinuteTick(){
+  if(!CONFIG.fixedBg) applyBackground(false);
+  applyNight();
+  const d = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
+  if(d !== bootMinuteTick.lastDay){
+    bootMinuteTick.lastDay = d;
+    if(!CONFIG.fixedBg) loadPhotoIndex().then(() => applyBackground(true));
+    tickDates();
+    loadPrayers();
+    loadMatches();
+    if(CONFIG.panel === 'shows') loadWeek();
+    loadWeather();
+    renderPanel(false);
+  }
+}
+bootMinuteTick.lastDay = '';
 
 function boot(){
   if(CONFIG.widget){ bootWidget(); return; }
+  if(CONFIG.previewBgLayout) document.documentElement.classList.add('preview-bg-layout');
   restoreSnap();
+  purgeLegacyMarketTickers();
   setTimeout(saveSnap, 15*1000);   // the dream can be killed before pagehide
   setInterval(saveSnap, 60*1000);
   addEventListener('pagehide', saveSnap);
   const wxCity = document.getElementById('wx-city');
   if(wxCity) wxCity.textContent = CONFIG.city;
-  const cs = document.getElementById('clock-sub');
-  if(cs) cs.textContent = 'بتوقيت ' + CONFIG.city;
   document.title = 'شاشة تلفزيونك';
+  const remoteCount = REMOTE_BGS.length;
   applyBackground(true);
-  loadPhotoIndex().then(() => applyBackground(true));
-  setInterval(() => applyBackground(false), 60*1000);
-  tickClock(); tickDates(); tickRamadan();
-  TICKERS.forEach(loadTicker);
-  if(CONFIG.panel === 'none') document.querySelector('.week').style.display = 'none';
-  else if(CONFIG.panel !== 'shows') renderPanel(false);   // its own data arrives with prayers, weather, matches
+  if(!CONFIG.fixedBg){
+    loadPhotoIndex().then(() => {
+      if(REMOTE_BGS.length !== remoteCount) applyBackground(true);
+    });
+  }
+  tickClock(); tickDates();
+  if(CONFIG.panel === 'none'){
+    const wk = document.querySelector('.week-col > .week:not(.aj-breaking)');
+    if(wk) wk.style.display = 'none';
+  }
+  else if(CONFIG.panel !== 'shows') renderPanel(false);
   loadPrayers(); loadMatches(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather();
+  if(SKY_BREAK_POOL.length) renderSkyBreaking(false);
+  loadSkyBreaking();
+  setInterval(loadSkyBreaking, SKY_BREAK_POLL_MS);
+  setInterval(() => { if(SKY_BREAK_POOL.length > 1){ SKY_BREAK_PAGE++; renderSkyBreaking(true); } }, 20 * 1000);
   applyNight(); pixelShift();
+  bootMinuteTick.lastDay = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
+  setInterval(bootMinuteTick, 60*1000);
 
   setInterval(tickClock, 1000);
-  setInterval(()=>{ tickDates(); tickPrayer(); tickRamadan(); if(CONFIG.panel === 'prayers') renderPanel(false); }, 15000);
+  setInterval(()=>{ tickDates(); tickPrayer(); if(CONFIG.panel === 'prayers') renderPanel(false); }, 15000);
   setInterval(() => renderMatches(false), 60000);
   setInterval(() => renderMatches(true), CONFIG.matchPageMs);
   setInterval(loadLive, 2*60000);
   setInterval(loadPrayers, 6*3600*1000);
   setInterval(loadMatches, 30*60*1000);
-  setInterval(()=>TICKERS.forEach(loadTicker), 15*60*1000);
   if(CONFIG.panel === 'shows') setInterval(loadWeek, 6*3600*1000);
   setInterval(loadWeather, 30*60*1000);
   setInterval(()=>{
     if(CONFIG.panel === 'shows' && WEEK_POOL.length > WEEK_ROWS){ WEEK_PAGE++; renderWeekPage(true); }
     if(CONFIG.panel === 'matches'){ LIST_PAGE++; renderPanel(matchRows().length > WEEK_ROWS); }
   }, 25*1000);
-  setInterval(applyNight, 60*1000);
   setInterval(pixelShift, 4*60*1000);
-  let lastDay = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
-  setInterval(()=>{
-    const d = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone}).format(new Date());
-    if(d !== lastDay){ lastDay = d; loadPhotoIndex().then(() => applyBackground(true)); tickDates(); tickRamadan(); loadPrayers(); loadMatches(); if(CONFIG.panel === 'shows') loadWeek(); loadWeather(); renderPanel(false); }
-  }, 60*1000);
 }
 
 // The launcher's card: the chosen panel only, refreshed like on the screensaver, nothing else loaded.
 function bootWidget(){
   document.documentElement.classList.add('widget');
   restoreSnap();
+  purgeLegacyMarketTickers();
   setTimeout(saveSnap, 15*1000);
   setInterval(saveSnap, 60*1000);
   addEventListener('pagehide', saveSnap);
@@ -1363,6 +1372,70 @@ function bootWidget(){
   let lastDay = riyadhDayNumber();
   setInterval(() => { if(riyadhDayNumber() !== lastDay){ lastDay = riyadhDayNumber(); if(P === 'prayers') loadPrayers(); renderPanel(false); } }, 60*1000);
   reveal();
+}
+
+/** OLED: gallery mode (appinfo) extends idle to ~30 min; tvpower blocks the clock screensaver while we are foreground. */
+const SCREEN_SAVER_CLIENT = 'com.salahalsuheme.salahtv';
+function initHdmiCamPreview(){
+  const n = CONFIG.hdmiCam;
+  const panel = document.getElementById('hdmi-cam-panel');
+  const view = document.getElementById('hdmi-cam-view');
+  const video = document.getElementById('hdmi-cam-video');
+  if(!panel || !view || !video || !n){
+    if(panel) panel.hidden = true;
+    return;
+  }
+  panel.hidden = false;
+  const appId = 'com.webos.app.hdmi' + n;
+  const src = 'ext://hdmi:' + n;
+  video.innerHTML = '';
+  const source = document.createElement('source');
+  source.type = 'service/webos-external';
+  source.src = src;
+  video.appendChild(source);
+  const openFull = () => launchFromSalah(appId).catch(() => {});
+  view.addEventListener('click', openFull);
+  view.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.keyCode === 13){ e.preventDefault(); openFull(); }
+  });
+  const markOff = () => view.classList.add('cam-off');
+  const markOn = () => view.classList.remove('cam-off');
+  video.addEventListener('error', markOff);
+  video.addEventListener('emptied', markOff);
+  video.addEventListener('playing', markOn);
+  try{
+    video.load();
+    const p = video.play();
+    if(p && p.catch) p.catch(markOff);
+  }catch(e){ markOff(); }
+  setTimeout(() => {
+    if(video.readyState < 2 && !video.videoWidth) markOff();
+  }, 8000);
+}
+
+function initScreenSaverBlock(){
+  const Bridge = window.PalmServiceBridge;
+  if(!Bridge) return;
+  const bridge = new Bridge();
+  bridge.onservicecallback = (message) => {
+    let data;
+    try { data = JSON.parse(message); }
+    catch(e) { return; }
+    if(data.state !== 'Active' || !data.timestamp) return;
+    if(document.hidden) return;
+    try {
+      bridge.call(
+        'luna://com.webos.service.tvpower/power/responseScreenSaverRequest',
+        JSON.stringify({ clientName: SCREEN_SAVER_CLIENT, ack: false, timestamp: data.timestamp })
+      );
+    } catch(e) {}
+  };
+  try {
+    bridge.call(
+      'luna://com.webos.service.tvpower/power/registerScreenSaverRequest',
+      JSON.stringify({ subscribe: true, clientName: SCREEN_SAVER_CLIENT })
+    );
+  } catch(e) {}
 }
 
 function lunaCall(uri, params){
@@ -1396,6 +1469,22 @@ function launchApp(id, params){
   return lunaCall('luna://com.webos.applicationManager/launch', payload);
 }
 
+const LG_HOME_FLAG = '/tmp/allow_lg_home';
+
+function hbExec(command){
+  return lunaCall('luna://org.webosbrew.hbchannel.service/exec', { command });
+}
+
+function clearLegacyHomePass(){
+  return hbExec('rm -f ' + LG_HOME_FLAG).catch(() => {});
+}
+
+/** فتح تطبيق من شاشة صلاح: يمسح إذن واجهة LG حتى «رجوع» لا يعلق على الشاشة القديمة. */
+function launchFromSalah(id, params){
+  clearLegacyHomePass();
+  return launchApp(id, params);
+}
+
 /* نفس اختصارات تطبيقات النظام في Lumen (شبكة، بلوتوث، AirPlay، …) */
 const SYS_SHORTCUTS = [
   {label:'الشبكة', id:'com.palm.app.settings', params:{target:'network'}},
@@ -1411,7 +1500,7 @@ let sysTiles = [];
 let sysFocus = 0;
 
 function launchShortcut(slot){
-  const run = (s) => launchApp(s.id, s.params);
+  const run = (s) => launchFromSalah(s.id, s.params);
   run(slot).catch(() => {
     if(slot.fallback) return run(slot.fallback);
     throw 0;
@@ -1446,8 +1535,17 @@ function openSysPanel(){
   panel.setAttribute('aria-hidden', 'false');
   sysPanelOpen = true;
   sysFocus = 0;
-  sysTiles.forEach((t, j) => t.classList.toggle('focused', j === 0));
-  if(sysTiles[0]) sysTiles[0].focus();
+  sysTiles.forEach((t, j) => {
+    t.tabIndex = -1;
+    t.classList.toggle('focused', j === 0);
+  });
+}
+
+function setSysTileFocus(next){
+  if(!sysTiles.length || next === sysFocus) return;
+  sysTiles[sysFocus].classList.remove('focused');
+  sysFocus = next;
+  sysTiles[sysFocus].classList.add('focused');
 }
 
 function sysPanelKey(e){
@@ -1464,9 +1562,7 @@ function sysPanelKey(e){
   else return;
   let next = r * cols + c;
   if(next >= sysTiles.length) next = sysTiles.length - 1;
-  sysFocus = next;
-  sysTiles.forEach((t, j) => t.classList.toggle('focused', j === sysFocus));
-  sysTiles[sysFocus].focus();
+  setSysTileFocus(next);
 }
 
 function initSysPanel(){
@@ -1475,12 +1571,88 @@ function initSysPanel(){
   document.addEventListener('keydown', sysPanelKey);
 }
 
-const GEAR_SVG = '<svg class="dock-gear" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.65" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>';
+const BROWSER_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.25"/><path d="M4 12h16"/><path d="M12 3.75c2.2 2.5 3.4 5.2 3.4 8.25S14.2 17.75 12 20.25c-2.2-2.5-3.4-5.2-3.4-8.25S9.8 6.25 12 3.75z"/></svg>';
+const APPS_STORE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.25"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.25"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.25"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.25"/></svg>';
+const AIRPLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="9" rx="1.25"/><path stroke-linejoin="round" d="M12 14 7.5 19h9L12 14z"/></svg>';
+const GEAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>';
+const LG_STORE_ID = 'com.webos.app.discovery';
+const LG_BROWSER_ID = 'com.webos.app.browser';
+const LG_HOME_DASHBOARD_ID = 'com.webos.app.homeconnect';
+
+function dockGlyphHtml(svg){
+  return '<span class="dock-icon dock-icon--glyph">' + svg + '</span>';
+}
+
+/** TV dock: one focus ring + cached geometry — no class toggles / scale / layout per key (webOS). */
+function attachDockSpatialNav(root, buttons){
+  let ring = root.querySelector('.dock-focus-ring');
+  if(!ring){
+    ring = document.createElement('div');
+    ring.className = 'dock-focus-ring';
+    ring.setAttribute('aria-hidden', 'true');
+    root.appendChild(ring);
+  }
+  const state = {
+    root, ring, buttons, focus: 0, layout: [],
+    refresh(){
+      const base = root.getBoundingClientRect();
+      state.layout = buttons.map((btn) => {
+        const icon = btn.querySelector('.dock-icon');
+        if(!icon) return {x:0,y:0,w:0,h:0};
+        const r = icon.getBoundingClientRect();
+        return {x:r.left - base.left, y:r.top - base.top, w:r.width, h:r.height};
+      });
+    },
+    paint(idx){
+      const L = state.layout[idx];
+      if(!L) return;
+      ring.style.width = L.w + 'px';
+      ring.style.height = L.h + 'px';
+      ring.style.transform = 'translate3d(' + L.x + 'px,' + L.y + 'px,0)';
+    },
+    go(delta){
+      const n = buttons.length;
+      if(!n) return;
+      const next = (state.focus + delta + n) % n;
+      if(next === state.focus) return;
+      state.focus = next;
+      state.paint(next);
+    }
+  };
+  const bootLayout = () => {
+    state.refresh();
+    state.paint(state.focus);
+    root.classList.add('dock-ready');
+  };
+  requestAnimationFrame(() => requestAnimationFrame(bootLayout));
+  if(!root._dockResize){
+    root._dockResize = true;
+    window.addEventListener('resize', () => { state.refresh(); state.paint(state.focus); }, {passive:true});
+  }
+  const nav = window.__dockNav || (window.__dockNav = { ready:false });
+  nav.root = root;
+  nav.buttons = buttons;
+  nav.state = state;
+  if(!nav.ready){
+    nav.ready = true;
+    const isLeft = (e) => e.key === 'ArrowLeft' || e.keyCode === 37;
+    const isRight = (e) => e.key === 'ArrowRight' || e.keyCode === 39;
+    const isEnter = (e) => e.key === 'Enter' || e.keyCode === 13;
+    document.addEventListener('keydown', (e) => {
+      const d = window.__dockNav;
+      if(!d || sysPanelOpen || !d.buttons || !d.buttons.length) return;
+      if(isLeft(e)){ e.preventDefault(); e.stopImmediatePropagation(); d.state.go(1); return; }
+      if(isRight(e)){ e.preventDefault(); e.stopImmediatePropagation(); d.state.go(-1); return; }
+      if(isEnter(e)){ e.preventDefault(); d.buttons[d.state.focus].click(); }
+    }, true);
+  }
+  return state;
+}
 
 const DOCK_SLOTS = [
   {label:'تلفزيون', id:'com.webos.app.hdmi1', hdmi:1},
   {label:'كاميرا البيت', id:'com.webos.app.hdmi2', hdmi:2},
-  {label:'بلايستيشن', id:'com.webos.app.hdmi3', hdmi:3},
+  {label:'بلاي ستيشن', id:'com.webos.app.hdmi3', hdmi:3},
   {label:'يوتيوب', id:'youtube.leanback.v4', match:/youtube|يوتيوب/i},
   {label:'شاهد', id:'net.mbc.shahid', match:/شاهد|shahid/i},
   {label:'نتفلكس', id:'netflix', match:/netflix|نتفلكس/i},
@@ -1526,32 +1698,44 @@ function initAppDock(){
       b.className = 'dock-btn';
       b.setAttribute('data-app-id', item.id);
       b.innerHTML = dockIconHtml(item);
-      b.addEventListener('click', () => launchApp(item.id).catch(() => {}));
+      b.addEventListener('click', () => launchFromSalah(item.id).catch(() => {}));
       root.appendChild(b);
       buttons.push(b);
     });
+    const browser = document.createElement('button');
+    browser.type = 'button';
+    browser.className = 'dock-btn';
+    browser.setAttribute('aria-label', 'متصفح الويب');
+    browser.innerHTML = dockGlyphHtml(BROWSER_SVG);
+    browser.addEventListener('click', () => launchFromSalah(LG_BROWSER_ID).catch(() => {}));
+    root.appendChild(browser);
+    buttons.push(browser);
+    const store = document.createElement('button');
+    store.type = 'button';
+    store.className = 'dock-btn';
+    store.setAttribute('aria-label', 'متجر التطبيقات');
+    store.innerHTML = dockGlyphHtml(APPS_STORE_SVG);
+    store.addEventListener('click', () => launchFromSalah(LG_STORE_ID).catch(() => {}));
+    root.appendChild(store);
+    buttons.push(store);
+    const homeDash = document.createElement('button');
+    homeDash.type = 'button';
+    homeDash.className = 'dock-btn';
+    homeDash.setAttribute('aria-label', 'لوحة معلومات المنزل ThinQ');
+    homeDash.innerHTML = dockGlyphHtml(AIRPLAY_SVG);
+    homeDash.addEventListener('click', () => launchFromSalah(LG_HOME_DASHBOARD_ID).catch(() => {}));
+    root.appendChild(homeDash);
+    buttons.push(homeDash);
     const gear = document.createElement('button');
     gear.type = 'button';
-    gear.className = 'dock-btn dock-btn--gear';
+    gear.className = 'dock-btn';
     gear.setAttribute('aria-label', 'اختصارات النظام');
-    gear.innerHTML = GEAR_SVG;
+    gear.innerHTML = dockGlyphHtml(GEAR_SVG);
     gear.addEventListener('click', () => openSysPanel());
     root.appendChild(gear);
     buttons.push(gear);
-    let focusIdx = 0;
-    const setFocus = (i) => {
-      if(sysPanelOpen) return;
-      focusIdx = (i + buttons.length) % buttons.length;
-      buttons.forEach((btn, j) => btn.classList.toggle('focused', j === focusIdx));
-      buttons[focusIdx].focus();
-    };
-    if(buttons.length) setFocus(0);
-    root.addEventListener('keydown', (e) => {
-      if(sysPanelOpen || !buttons.length) return;
-      if(e.key === 'ArrowLeft') { e.preventDefault(); setFocus(focusIdx + 1); }
-      if(e.key === 'ArrowRight') { e.preventDefault(); setFocus(focusIdx - 1); }
-      if(e.key === 'Enter') { e.preventDefault(); buttons[focusIdx].click(); }
-    });
+    buttons.forEach((btn) => { btn.tabIndex = -1; });
+    attachDockSpatialNav(root, buttons);
   });
 }
 
@@ -1563,6 +1747,8 @@ document.addEventListener('keydown', e=>{
 });
 
 boot();
+initScreenSaverBlock();
+initHdmiCamPreview();
 initSysPanel();
 initAppDock();
 </script>

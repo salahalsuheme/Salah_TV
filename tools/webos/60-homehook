@@ -1,0 +1,8 @@
+#!/bin/sh
+[ -x /var/lib/homehook/watch.sh ] || exit 0
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:$PATH"
+if ps w 2>/dev/null | grep -v grep | grep -q '/var/lib/homehook/watch.sh'; then
+  exit 0
+fi
+setsid nohup /var/lib/homehook/watch.sh </dev/null >/dev/null 2>&1 &
+exit 0

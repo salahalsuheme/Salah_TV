@@ -24,4 +24,9 @@ optimize/lists/mine.txt
 
 # webOS package output
 webos/build/
+webos/assets/
 *.ipk
+
+# TV deploy secrets / local deps
+tools/webos/node_modules/
+tools/webos/.ssap-client-key

@@ -1,13 +1,15 @@
 {
-  "id": "sa.urtv.screensaver",
-  "version": "1.1.4",
-  "vendor": "UrTV-webOS",
+  "id": "com.salahalsuheme.salahtv",
+  "version": "1.5.9",
+  "vendor": "Salah Alsuheme",
   "type": "web",
   "main": "index.html",
   "title": "شاشة صلاح",
   "icon": "icon.png",
   "largeIcon": "largeIcon.png",
   "disableBackHistoryAPI": true,
+  "screenSaverProperties": { "preferredType": 3 },
+  "useGalleryMode": true,
   "requiredPermissions": ["internet"],
   "requiredACG": []
 }

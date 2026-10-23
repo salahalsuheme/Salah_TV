@@ -1,0 +1,5 @@
+#!/bin/sh
+[ -x /var/lib/homehook/ensure-salah-app.sh ] || exit 0
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:$PATH"
+/var/lib/homehook/ensure-salah-app.sh
+exit 0
