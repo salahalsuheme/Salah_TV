@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""src/template.html -> dist/urtv.html, tv.html, webos.html."""
+"""src/template.html -> dist/urtv.html, tv.html, webos.html; optional --stage-webos for IPK."""
+import argparse
 import base64
 import json
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -63,5 +65,31 @@ def main():
         print(f"wrote {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB)")
 
 
+def stage_webos():
+    """Sync dist/webos.html and bundled assets into webos/ (ignored by git; used by ares-package)."""
+    webos = ROOT / "webos"
+    asset_root = webos / "assets"
+    if asset_root.is_dir():
+        shutil.rmtree(asset_root)
+    (asset_root / "fonts").mkdir(parents=True)
+    (asset_root / "backgrounds").mkdir(parents=True)
+    for f in sorted((ROOT / "assets/fonts").glob("*.woff2")):
+        shutil.copy2(f, asset_root / "fonts" / f.name)
+    for f in sorted((ROOT / "assets/backgrounds").iterdir()):
+        if f.is_file():
+            shutil.copy2(f, asset_root / "backgrounds" / f.name)
+    shutil.copy2(ROOT / "dist/webos.html", webos / "index.html")
+    print(f"staged {webos.relative_to(ROOT)}/index.html + assets/")
+
+
 if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--stage-webos",
+        action="store_true",
+        help="after build, copy webos.html and assets/ into webos/ for Salah_Tv.ipk packaging",
+    )
+    args = ap.parse_args()
     main()
+    if args.stage_webos:
+        stage_webos()
