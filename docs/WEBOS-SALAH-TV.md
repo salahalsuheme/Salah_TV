@@ -2,22 +2,26 @@
 
 تطبيق webOS **شاشة صلاح** — المطوّر **Salah Alsuheme**، المعرّف `com.salahalsuheme.salahtv`، الحزمة `Salah_Tv.ipk` (مبني على مشروع UrTV مفتوح المصدر للواجهة فقط).
 
-## البناء
+## البناء والحزمة (أمر واحد)
+
+أي تعديل على `src/template.html` أو `assets/` يُضمَّن في الحزمة عبر:
 
 ```powershell
-cd path\to\Salah_TV
-python src/build.py
-Copy-Item dist\urtv.html webos\index.html -Force
+cd D:\MyFiles\Salah_TV   # أو مسار المستودع
+powershell -ExecutionPolicy Bypass -File tools\webos\package-salah-tv.ps1
 ```
 
-## التعبئة والتثبيت
+الناتج الثابت: **`webos\build\Salah_Tv.ipk`** (نسخة إضافية في `%USERPROFILE%\Downloads\Salah_Tv.ipk`).
 
-```powershell
-cd webos
-npx ares-package . --no-minify -o build
-powershell -File tools\webos\package-salah-tv.ps1
-# ثم من Dev Manager أو: ares-install --device tv webos\build\Salah_Tv.ipk
+السكربت يشغّل `src/build.py --stage-webos` (يحدّث `dist/` و`webos/index.html` و`webos/assets/`) ثم `ares-package`.
+
+على Linux/macOS:
+
+```bash
+./tools/webos/package-salah-tv.sh
 ```
+
+تثبيت على التلفزيون: Dev Manager أو `ares-install --device tv webos\build\Salah_Tv.ipk`
 
 ارفع `version` في `webos/appinfo.json` قبل كل إصدار.
 
